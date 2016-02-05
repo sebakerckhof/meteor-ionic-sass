@@ -39,6 +39,7 @@ Package.onUse(function(api) {
     'scss/_scaffolding.scss',
     'scss/_select.scss',
     'scss/_slide-box.scss',
+    'scss/_slides.scss',
     'scss/_spinner.scss',
     'scss/_tabs.scss',
     'scss/_toggle.scss',
