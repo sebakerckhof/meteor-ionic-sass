@@ -12,7 +12,7 @@ module.exports = {
 
   banner:
     '/*!\n' +
-    ' * Copyright 2014 Drifty Co.\n' +
+    ' * Copyright 2015 Drifty Co.\n' +
     ' * http://drifty.com/\n' +
     ' *\n' +
     ' * Ionic, v<%= pkg.version %>\n' +
@@ -60,6 +60,7 @@ module.exports = {
     'js/views/modalView.js',
     'js/views/sideMenuView.js',
     'js/views/sliderView.js',
+    'js/views/slidesView.js',
     'js/views/toggleView.js'
   ],
 

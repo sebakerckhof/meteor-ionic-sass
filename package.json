@@ -1,8 +1,8 @@
 {
   "name": "ionic-sdk",
   "private": false,
-  "version": "1.1.0",
-  "codename": "xenon-xerus",
+  "version": "1.2.4",
+  "codename": "Copenhagen",
   "repository": {
     "url": "git://github.com/driftyco/ionic.git"
   },
@@ -61,7 +61,6 @@
     "sauce-connect-launcher": "^0.2.2",
     "semver": "^2.2.1",
     "through": "^2.3.4",
-    "webpack": "^1.10.1",
     "winston": "^0.7.2"
   },
   "licenses": [

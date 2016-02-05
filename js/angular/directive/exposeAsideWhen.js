@@ -23,7 +23,6 @@
  * the most common use-case. However, for added flexibility, any valid media query could be added
  * as the value, such as `(min-width:600px)` or even multiple queries such as
  * `(min-width:750px) and (max-width:1200px)`.
-
  * @usage
  * ```html
  * <ion-side-menus>
@@ -39,11 +38,24 @@
  * For a complete side menu example, see the
  * {@link ionic.directive:ionSideMenus} documentation.
  */
+
 IonicModule.directive('exposeAsideWhen', ['$window', function($window) {
   return {
     restrict: 'A',
     require: '^ionSideMenus',
     link: function($scope, $element, $attr, sideMenuCtrl) {
+
+      var prevInnerWidth = $window.innerWidth;
+      var prevInnerHeight = $window.innerHeight;
+
+      ionic.on('resize', function() {
+        if (prevInnerWidth === $window.innerWidth && prevInnerHeight === $window.innerHeight) {
+          return;
+        }
+        prevInnerWidth = $window.innerWidth;
+        prevInnerHeight = $window.innerHeight;
+        onResize();
+      }, $window);
 
       function checkAsideExpose() {
         var mq = $attr.exposeAsideWhen == 'large' ? '(min-width:768px)' : $attr.exposeAsideWhen;
@@ -61,14 +73,6 @@ IonicModule.directive('exposeAsideWhen', ['$window', function($window) {
       }, 300, false);
 
       $scope.$evalAsync(checkAsideExpose);
-
-      ionic.on('resize', onResize, $window);
-
-      $scope.$on('$destroy', function() {
-        ionic.off('resize', onResize, $window);
-      });
-
     }
   };
 }]);
-

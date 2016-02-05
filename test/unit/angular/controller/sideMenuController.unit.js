@@ -50,6 +50,8 @@ describe('$ionicSideMenus controller', function() {
       var content = new Controller({ el: document.createElement('div') });
       content.setMarginLeft = function(){};
       content.setMarginRight = function(){};
+      content.setMarginLeftAndRight = function(){};
+      content.setCanScroll = function(){};
       ctrl.setContent(content);
     });
 

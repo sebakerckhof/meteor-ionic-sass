@@ -230,7 +230,7 @@ var zyngaCore = { effect: {} };
       return id;
     }
   };
-})(this);
+})(window);
 
 /*
  * Scroller
@@ -410,6 +410,9 @@ ionic.views.Scroll = ionic.views.View.inherit({
       }
       return self.options.freeze;
     };
+
+    // We can just use the standard freeze pop in our mouth
+    self.freezeShut = self.freeze;
 
     self.setScrollStart = function() {
       ionic.scroll.isScrolling = Math.abs(ionic.scroll.lastTop - self.__scrollTop) > 1;
@@ -885,6 +888,7 @@ ionic.views.Scroll = ionic.views.View.inherit({
       document.addEventListener("touchmove", self.touchMove, false);
       document.addEventListener("touchend", self.touchEnd, false);
       document.addEventListener("touchcancel", self.touchEnd, false);
+      document.addEventListener("wheel", self.mouseWheel, false);
 
     } else if (window.navigator.pointerEnabled) {
       // Pointer Events

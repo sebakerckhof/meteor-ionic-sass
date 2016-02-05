@@ -3,6 +3,10 @@
 
   // Ionic CSS polyfills
   ionic.CSS = {};
+  ionic.CSS.TRANSITION = [];
+  ionic.CSS.TRANSFORM = [];
+
+  ionic.EVENTS = {};
 
   (function() {
 
@@ -26,6 +30,9 @@
       }
     }
 
+    // Fallback in case the keys don't exist at all
+    ionic.CSS.TRANSITION = ionic.CSS.TRANSITION || 'transition';
+
     // The only prefix we care about is webkit for transitions.
     var isWebkit = ionic.CSS.TRANSITION.indexOf('webkit') > -1;
 
@@ -34,6 +41,30 @@
 
     // To be sure transitionend works everywhere, include *both* the webkit and non-webkit events
     ionic.CSS.TRANSITIONEND = (isWebkit ? 'webkitTransitionEnd ' : '') + 'transitionend';
+  })();
+
+  (function() {
+      var touchStartEvent = 'touchstart';
+      var touchMoveEvent = 'touchmove';
+      var touchEndEvent = 'touchend';
+      var touchCancelEvent = 'touchcancel';
+
+      if (window.navigator.pointerEnabled) {
+        touchStartEvent = 'pointerdown';
+        touchMoveEvent = 'pointermove';
+        touchEndEvent = 'pointerup';
+        touchCancelEvent = 'pointercancel';
+      } else if (window.navigator.msPointerEnabled) {
+        touchStartEvent = 'MSPointerDown';
+        touchMoveEvent = 'MSPointerMove';
+        touchEndEvent = 'MSPointerUp';
+        touchCancelEvent = 'MSPointerCancel';
+      }
+
+      ionic.EVENTS.touchstart = touchStartEvent;
+      ionic.EVENTS.touchmove = touchMoveEvent;
+      ionic.EVENTS.touchend = touchEndEvent;
+      ionic.EVENTS.touchcancel = touchCancelEvent;
   })();
 
   // classList polyfill for them older Androids

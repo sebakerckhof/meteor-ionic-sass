@@ -112,6 +112,17 @@
       };
     },
 
+    getOffsetTop: function(el) {
+      var curtop = 0;
+      if (el.offsetParent) {
+        do {
+          curtop += el.offsetTop;
+          el = el.offsetParent;
+        } while (el)
+        return curtop;
+      }
+    },
+
     /**
      * @ngdoc method
      * @name ionic.DomUtil#ready

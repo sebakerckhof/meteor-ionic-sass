@@ -120,7 +120,7 @@ ionic.tap = {
     if (window.navigator.pointerEnabled) {
       tapEventListener('pointerdown');
       tapEventListener('pointerup');
-      tapEventListener('pointcancel');
+      tapEventListener('pointercancel');
       tapTouchMoveListener = 'pointermove';
 
     } else if (window.navigator.msPointerEnabled) {
@@ -168,6 +168,11 @@ ionic.tap = {
   isDateInput: function(ele) {
     return !!ele &&
             (ele.tagName == 'INPUT' && (/^(date|time|datetime-local|month|week)$/i).test(ele.type));
+  },
+
+  isVideo: function(ele) {
+    return !!ele &&
+            (ele.tagName == 'VIDEO');
   },
 
   isKeyboardElement: function(ele) {
@@ -236,6 +241,9 @@ ionic.tap = {
   },
 
   requiresNativeClick: function(ele) {
+    if (ionic.Platform.isWindowsPhone() && (ele.tagName == 'A' || ele.tagName == 'BUTTON' || ele.hasAttribute('ng-click') || (ele.tagName == 'INPUT' && (ele.type == 'button' || ele.type == 'submit')))) {
+      return true; //Windows Phone edge case, prevent ng-click (and similar) events from firing twice on this platform
+    }
     if (!ele || ele.disabled || (/^(file|range)$/i).test(ele.type) || (/^(object|video)$/i).test(ele.tagName) || ionic.tap.isLabelContainingFileInput(ele)) {
       return true;
     }
@@ -254,7 +262,7 @@ ionic.tap = {
     if (ele && ele.nodeType === 1) {
       var element = ele;
       while (element) {
-        if ((element.dataset ? element.dataset.tapDisabled : element.getAttribute('data-tap-disabled')) == 'true') {
+        if ((element.dataset ? element.dataset.tapDisabled : element.getAttribute && element.getAttribute('data-tap-disabled')) == 'true') {
           return true;
         }
         element = element.parentElement;
@@ -350,14 +358,17 @@ function tapMouseDown(e) {
   if (e.isIonicTap || tapIgnoreEvent(e)) return null;
 
   if (tapEnabledTouchEvents) {
-    console.log('mousedown', 'stop event');
+    //console.log('mousedown', 'stop event');
     e.stopPropagation();
 
-    if ((!ionic.tap.isTextInput(e.target) || tapLastTouchTarget !== e.target) && !(/^(select|option)$/i).test(e.target.tagName)) {
+    if (!ionic.Platform.isEdge() && (!ionic.tap.isTextInput(e.target) || tapLastTouchTarget !== e.target) &&
+      !isSelectOrOption(e.target.tagName) && !ionic.tap.isVideo(e.target)) {
       // If you preventDefault on a text input then you cannot move its text caret/cursor.
       // Allow through only the text input default. However, without preventDefault on an
       // input the 300ms delay can change focus on inputs after the keyboard shows up.
       // The focusin event handles the chance of focus changing after the keyboard shows.
+      // Windows Phone - if you preventDefault on a video element then you cannot operate
+      // its native controls.
       e.preventDefault();
     }
 
@@ -379,7 +390,7 @@ function tapMouseUp(e) {
     return false;
   }
 
-  if (tapIgnoreEvent(e) || (/^(select|option)$/i).test(e.target.tagName)) return false;
+  if (tapIgnoreEvent(e) || isSelectOrOption(e.target.tagName)) return false;
 
   if (!tapHasPointerMoved(e)) {
     tapClick(e);
@@ -421,6 +432,7 @@ function tapTouchStart(e) {
     var textInput = tapTargetElement(tapContainingElement(e.target));
     if (textInput !== tapActiveEle) {
       // don't preventDefault on an already focused input or else iOS's text caret isn't usable
+      //console.log('Would prevent default here');
       e.preventDefault();
     }
   }
@@ -434,7 +446,7 @@ function tapTouchEnd(e) {
   if (!tapHasPointerMoved(e)) {
     tapClick(e);
 
-    if ((/^(select|option)$/i).test(e.target.tagName)) {
+    if (isSelectOrOption(e.target.tagName)) {
       e.preventDefault();
     }
   }
@@ -470,6 +482,10 @@ function tapIgnoreEvent(e) {
   if (e.isTapHandled) return true;
   e.isTapHandled = true;
 
+  if(ionic.tap.isElementTapDisabled(e.target)) {
+    return true;
+  }
+
   if (ionic.scroll.isScrolling && ionic.tap.containsOrIsTextInput(e.target)) {
     e.preventDefault();
     return true;
@@ -491,7 +507,7 @@ function tapHandleFocus(ele) {
     // already is the active element and has focus
     triggerFocusIn = true;
 
-  } else if ((/^(input|textarea)$/i).test(ele.tagName) || ele.isContentEditable) {
+  } else if ((/^(input|textarea|ion-label)$/i).test(ele.tagName) || ele.isContentEditable) {
     triggerFocusIn = true;
     ele.focus && ele.focus();
     ele.value = ele.value;
@@ -514,7 +530,7 @@ function tapHandleFocus(ele) {
 function tapFocusOutActive() {
   var ele = tapActiveElement();
   if (ele && ((/^(input|textarea|select)$/i).test(ele.tagName) || ele.isContentEditable)) {
-    console.log('tapFocusOutActive', ele.tagName);
+    //console.log('tapFocusOutActive', ele.tagName);
     ele.blur();
   }
   tapActiveElement(null);
@@ -535,7 +551,7 @@ function tapFocusIn(e) {
     // 2) There is an active element which is a text input
     // 3) A text input was just set to be focused on by a touch event
     // 4) A new focus has been set, however the target isn't the one the touch event wanted
-    console.log('focusin', 'tapTouchFocusedInput');
+    //console.log('focusin', 'tapTouchFocusedInput');
     tapTouchFocusedInput.focus();
     tapTouchFocusedInput = null;
   }
@@ -591,6 +607,10 @@ function tapTargetElement(ele) {
     }
   }
   return ele;
+}
+
+function isSelectOrOption(tagName){
+  return (/^(select|option)$/i).test(tagName);
 }
 
 ionic.DomUtil.ready(function() {
