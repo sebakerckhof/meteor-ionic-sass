@@ -1,6 +1,6 @@
 # ionic-sass
 
-[Ionic's CSS Framework](http://ionicframework.com/docs/components/) in SASS and bundled for Meteor 1.2+. Currently up to date with ionic version `v1.1.0`.
+[Ionic's CSS Framework](http://ionicframework.com/docs/components/) in SASS and bundled for Meteor 1.2+. Currently up to date with ionic version `v1.2.4`.
 
 ## Installation
 
